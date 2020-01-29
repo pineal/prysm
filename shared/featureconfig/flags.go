@@ -1,7 +1,6 @@
 package featureconfig
 
 import (
-	"github.com/prysmaticlabs/prysm/shared/params"
 	"github.com/urfave/cli"
 )
 
@@ -69,11 +68,11 @@ var (
 		Usage: "Enables connection to a slasher service in order to retrieve slashable events. Slasher is connected to the beacon node using gRPC and " +
 			"the slasher-provider flag can be used to pass its address.",
 	}
-	customGenesisDelayFlag = cli.Uint64Flag{
-		Name: "custom-genesis-delay",
-		Usage: "Start the genesis event with the configured genesis delay in seconds. " +
-			"This flag should be used for local development and testing only.",
-		Value: params.BeaconConfig().MinGenesisDelay,
+	noGenesisDelayFlag = cli.BoolFlag{
+		Name: "no-genesis-delay",
+		Usage: "Start the genesis event right away using the eth1 block timestamp which " +
+			"triggered the genesis as the genesis time. This flag should be used for local " +
+			"development and testing only.",
 	}
 	cacheFilteredBlockTreeFlag = cli.BoolFlag{
 		Name: "cache-filtered-block-tree",
@@ -221,7 +220,7 @@ var E2EValidatorFlags = []string{
 
 // BeaconChainFlags contains a list of all the feature flags that apply to the beacon-chain client.
 var BeaconChainFlags = append(deprecatedFlags, []cli.Flag{
-	customGenesisDelayFlag,
+	noGenesisDelayFlag,
 	minimalConfigFlag,
 	writeSSZStateTransitionsFlag,
 	disableForkChoiceUnsafeFlag,

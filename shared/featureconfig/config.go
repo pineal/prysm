@@ -19,7 +19,6 @@ The process for implementing new features using this package is as follows:
 package featureconfig
 
 import (
-	"github.com/prysmaticlabs/prysm/shared/params"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
@@ -28,7 +27,7 @@ var log = logrus.WithField("prefix", "flags")
 
 // Flags is a struct to represent which features the client will perform on runtime.
 type Flags struct {
-	CustomGenesisDelay        uint64 // CustomGenesisDelay signals how long of a delay to set to start the chain.
+	NoGenesisDelay            bool   // NoGenesisDelay signals to start the chain as quickly as possible.
 	MinimalConfig             bool   // MinimalConfig as defined in the spec.
 	WriteSSZStateTransitions  bool   // WriteSSZStateTransitions to tmp directory.
 	InitSyncNoVerify          bool   // InitSyncNoVerify when initial syncing w/o verifying block's contents.
@@ -77,10 +76,9 @@ func Init(c *Flags) {
 func ConfigureBeaconChain(ctx *cli.Context) {
 	complainOnDeprecatedFlags(ctx)
 	cfg := &Flags{}
-	if ctx.GlobalUint64(customGenesisDelayFlag.Name) != params.BeaconConfig().MinGenesisDelay {
-		delay := ctx.GlobalUint64(customGenesisDelayFlag.Name)
-		log.Warnf("Starting ETH2 with genesis delay of %d seconds", delay)
-		cfg.CustomGenesisDelay = delay
+	if ctx.GlobalBool(noGenesisDelayFlag.Name) {
+		log.Warn("Starting ETH2 with no genesis delay")
+		cfg.NoGenesisDelay = true
 	}
 	if ctx.GlobalBool(minimalConfigFlag.Name) {
 		log.Warn("Using minimal config")
